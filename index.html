@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title>主页</title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--Favicon-->
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
+    <!-- CSS
+    ================================================== -->
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- IconFont -->
+    <link rel="stylesheet" href="css/iconfonts.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <!-- magnific -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <!-- Template styles-->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Responsive styles-->
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Colorbox -->
+    <link rel="stylesheet" href="css/colorbox.css">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <script src="js/myinit.js"></script>
+
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript">
+        function pullNews(type) {
+            $.ajax({
+                type: "POST",
+                url: "pullNews.php",
+                dataType: "json",
+                data: {
+                    "cato": type,
+                    "startRow": 1,
+                    "rows": 14
+                },
+                success: function (result) {
+                    var i = 1
+                    for (let article in result) {
+                        var url = "/news/article.html?id="+result[article].newsId;
+                        if (i <= 2) {
+                            document.getElementById("title" + i.toString()).innerText = result[article].title;
+                            document.getElementById("title" + i.toString()).setAttribute("href",url);
+                            document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
+                            document.getElementById("author" + i.toString()).innerText = result[article].author;
+                            document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
+                            document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
+                            document.getElementById("cv" + i.toString()).innerText = result[article].cv;
+                            document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
+                            i = i + 1;
+                        } else if (i > 2 && i <= 4) {
+                            document.getElementById("title" + i.toString()).setAttribute("href",url);
+                            document.getElementById("title" + i.toString()).innerText = result[article].title;
+                            document.getElementById("author" + i.toString()).innerText = result[article].author;
+                            document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
+                            document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
+                            document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
+                            i = i + 1;
+                        } else if (i > 4 && i <= 14) {
+                            document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
+                            document.getElementById("title" + i.toString()).setAttribute("href",url);
+                            document.getElementById("title" + i.toString()).innerText = result[article].title;
+                            document.getElementById("author" + i.toString()).innerText = result[article].author;
+                            document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
+                            document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
+                            i = i + 1;
+                        } else {
+                            return;
+                        }
+                    }
+                }
+            })
+        }
+
+        function cat2str(cat) {
+            switch (cat) {
+                case "0":
+                    return "未分类";
+                case "1":
+                    return "科技";
+                case "2":
+                    return "政治";
+                case "3":
+                    return "娱乐";
+                case "4":
+                    return "体育";
+                case "5":
+                    return "财经";
+                case "6":
+                    return "游戏";
+            }
+        }
+    </script>
+
+
+</head>
+
+<body onload="init();pullNews(0);">
+<div class="trending-bar trending-light d-md-block">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-md-6 text-center text-md-left">
+                <p class="trending-title"><i class="tsicon fa fa-bolt"></i> 实时热点</p>
+                <div id="trending-slide" class="owl-carousel owl-theme trending-slide">
+                    <div class="item">
+                        <div class="post-content">
+                            <h2 class="post-title title-small">
+                                <a href="#">The best MacBook Pro alternatives in 2017 for Apple users</a>
+                            </h2>
+                        </div><!-- Post content end -->
+                    </div><!-- Item 1 end -->
+                    <div class="item">
+                        <div class="post-content">
+                            <h2 class="post-title title-small">
+                                <a href="#">Soaring through Southern Patagonia with the Premium Byrd drone</a>
+                            </h2>
+                        </div><!-- Post content end -->
+                    </div><!-- Item 2 end -->
+                </div><!-- Carousel end -->
+            </div><!-- Col end -->
+            <div class="col-md text-md-right text-center">
+                <div class="ts-date">
+                    <i id="currentTime" class="fa fa-calendar-check-o"></i>
+                </div>
+            </div><!-- Col end -->
+            <div class="col-md text-md-right text-center">
+                <div class="item" id="loginItem">
+                    <button class="btn-success btn-sm" onclick="window.location.href = 'login.html'">登陆</button>
+                    <button class="btn-warning btn-sm" onclick="window.location.href = 'register.html'">注册</button>
+                </div>
+                <div class="item" id="logoutItem" style="display: none">
+                    <button class="btn-success btn-sm" id="user"></button>
+                    <button class="btn-warning btn-sm" onclick="logout()">退出</button>
+                </div>
+            </div>
+        </div><!--/ Row end -->
+    </div><!--/ Container end -->
+</div><!--/ Trending end -->
+
+<!-- Header start -->
+<header id="header" class="header">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-md-3 col-sm-12">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="images/logos/logo.png" alt="">
+                    </a>
+                </div>
+            </div><!-- logo col end -->
+
+        </div><!-- Row end -->
+    </div><!-- Logo and banner area end -->
+</header><!--/ Header end -->
+
+<div class="main-nav clearfix is-ts-sticky">
+    <div class="container">
+        <div class="row justify-content-between">
+            <nav class="navbar navbar-expand-lg col-lg-8">
+                <div class="site-nav-inner float-left">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="true" aria-label="Toggle navigation">
+                        <span class="fa fa-bars"></span>
+                    </button>
+                    <!-- End of Navbar toggler -->
+                    <div id="navbarSupportedContent" class="collapse navbar-collapse navbar-responsive-collapse">
+                        <ul class="nav navbar-nav">
+
+                            <li>
+                                <a href="index.html">主页</a>
+                            </li>
+
+                            <li class="nav-item dropdown mega-dropdown">
+                                <a href="category.html" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-haspopup="true" aria-expanded="false">分类 <i class="fa fa-angle-down"></i></a>
+                                <!-- responsive dropdown -->
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="category.html">lifestyle 1</a></li>
+                                </ul>
+                                <!-- responsive dropdown end -->
+                                <div class="dropdown-menu mega-menu-content clearfix">
+                                    <div class="menu-tab">
+                                        <div class="row">
+                                            <ul class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
+                                                <li class="nav-item">
+                                                    <a class="animated fadeIn active" href="#tab-A" data-toggle="tab">
+											  			<span class="tab-head">
+															<span class="tab-text-title">Health</span>
+														</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+
+                                            <div class="tab-content col-10">
+                                                <div class="tab-pane fade show active" id="tab-A">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="post-block-style clearfix">
+                                                                <div class="post-thumb">
+                                                                    <a href="#"><img class="img-fluid"
+                                                                                     src="images/news/lifestyle/image1.jpg"
+                                                                                     alt=""/></a>
+                                                                </div>
+                                                                <div class="post-content">
+                                                                    <h2 class="post-title title-small">
+                                                                        <a href="#">That wearable on your wrist soon
+                                                                            track your…</a>
+                                                                    </h2>
+                                                                </div><!-- Post content end -->
+                                                            </div><!-- Post Block style end -->
+                                                        </div>
+                                                    </div>
+                                                </div><!-- Tab pane 1 end -->
+                                            </div> <!-- Tab pane 2 end -->
+                                        </div>
+                                    </div><!-- Menu tab end -->
+                                </div><!-- Mega menu end -->
+                            </li><!-- Tab menu end -->
+
+                            <li>
+                                <a href="contact.html">投诉建议</a>
+                            </li>
+
+                            <li>
+                                <a href="newsManage.html">新闻管理</a>
+                            </li>
+                        </ul><!--/ Nav ul end -->
+                    </div><!--/ Collapse end -->
+
+                </div><!-- Site Navbar inner end -->
+            </nav><!--/ Navigation end -->
+
+            <div class="col-lg-4 text-right nav-social-wrap">
+                <div class="top-social">
+                    <ul class="social list-unstyled">
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                    </ul>
+                </div>
+
+
+                <div class="nav-search">
+                    <a href="#search-popup" class="xs-modal-popup">
+                        <i class="icon icon-search1"></i>
+                    </a>
+                </div><!-- Search end -->
+
+                <div class="zoom-anim-dialog mfp-hide modal-searchPanel ts-search-form" id="search-popup">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="xs-search-panel">
+                                <form class="ts-search-group">
+                                    <div class="input-group">
+                                        <input type="search" class="form-control" name="s" placeholder="Search"
+                                               value="">
+                                        <button class="input-group-btn search-button">
+                                            <i class="icon icon-search1"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End xs modal -->
+            </div>
+        </div><!--/ Row end -->
+    </div><!--/ Container end -->
+</div><!-- Menu wrapper end -->
+
+<div class="gap-30"></div>
+
+<section class="featured-post-area no-padding">
+    <div class="container">
+        <div class="row ts-gutter-20">
+            <div class="col-lg-7 col-md-12 pad-r">
+                <div id="featured-slider" class="owl-carousel owl-theme featured-slider">
+                    <div id="img1" class="item post-overaly-style"
+                         style="background-image:url(images/news/lifestyle/image1.jpg)">
+                        <div class="featured-post">
+                            <a id="imgurl1" href="#" class="image-link">&nbsp;</a>
+                            <div class="overlay-post-content">
+                                <div class="post-content">
+                                    <div class="grid-category">
+                                        <a id="cat1" class="post-cat fashion" href="#">Fashion</a>
+                                    </div>
+
+                                    <h2 class="post-title title-lg">
+                                        <a id="title1" href="#">Netcix cuts out the chill with an integrated trainer on
+                                            running</a>
+                                    </h2>
+                                    <div class="post-meta">
+                                        <ul>
+                                            <li><a id="author1" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                            <li><a id="posttime1" href="#"><i class="icon icon-clock"></i> 20 July, 2020</a>
+                                            </li>
+                                            <li><a id="cv1" href="#" class="view"><i class="icon icon-fire"></i>
+                                                354k</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--/ Featured post end -->
+                    </div><!-- Item 1 end -->
+                    <div id="img2" class="item post-overaly-style"
+                         style="background-image:url(images/news/fashion/image3.png)">
+                        <div class="featured-post">
+                            <a id="imgurl2" href="#" class="image-link">&nbsp;</a>
+                            <div class="overlay-post-content">
+                                <div class="post-content">
+                                    <div class="grid-category">
+                                        <a id="cat2" class="post-cat fashion" href="#">Fashion</a>
+                                    </div>
+
+                                    <h2 class="post-title title-lg">
+                                        <a id="title2" href="#">Netcix cuts out the chill with an integrated trainer on
+                                            running</a>
+                                    </h2>
+                                    <div class="post-meta">
+                                        <ul>
+                                            <li><a id="author2" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                            <li><a id="posttime2" href="#"><i class="icon icon-clock"></i> 20 July, 2020</a>
+                                            </li>
+                                            <li><a id="cv2" href="#" class="view"><i class="icon icon-fire"></i>
+                                                354k</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--/ Featured post end -->
+                    </div><!-- Item 1 end -->
+                </div><!-- Featured owl carousel end-->
+            </div><!-- Col 7 end -->
+
+            <div class="col-lg-5 col-md-12 pad-l">
+                <div class="row ts-gutter-20">
+                    <div class="col-md-12">
+                        <div id="img3" class="post-overaly-style post-md ml-8"
+                             style="background-image:url(images/news/lifestyle/image2.png)">
+                            <div class="post-content">
+                                <a id="cat3" class="post-cat lifestyle" href="#">Lifestyle</a>
+                                <h2 class="post-title title-md">
+                                    <a id="title3" href="#">Nancy Zhang a Chinese busy woman and social media</a>
+                                </h2>
+                                <div class="post-meta">
+                                    <ul>
+                                        <li><a id="author3" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                        <li><a id="posttime3" href="#"><i class="icon icon-clock"></i> 20 July, 2020</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><!-- Post content end -->
+                        </div><!-- Post Overaly end -->
+                    </div><!-- Col end -->
+                    <div class="col-md-12">
+                        <div id="img4" class="post-overaly-style post-sm overlay-primary  ml-8"
+                             style="background-image:url(images/news/health/image1.png)">
+                            <div class="post-content">
+                                <a id="cat4" class="post-cat health" href="#">Health</a>
+                                <h2 class="post-title title-md">
+                                    <a id="title4" href="#">Nancy Zhang a Chinese busy woman and social media</a>
+                                </h2>
+                                <div class="post-meta">
+                                    <ul>
+                                        <li><a id="author4" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                        <li><a id="posttime4" href="#"><i class="icon icon-clock"></i> 20 July, 2020</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><!-- Post content end -->
+                        </div><!-- Post Overaly end -->
+                    </div><!-- Col end -->
+                </div><!-- row end -->
+            </div><!-- Col 5 end -->
+
+        </div><!-- Row end -->
+    </div><!-- Container end -->
+</section><!-- Feature post end -->
+
+<!-- post wraper start-->
+<section class="trending-slider pb-0">
+    <div class="container">
+        <div class="ts-grid-box">
+            <h2 class="block-title">
+                <span class="title-angle-shap"> 热点新闻</span>
+            </h2>
+            <div class="owl-carousel dot-style2" id="trending-slider">
+                <div id="img5" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl5" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat5" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title5" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author5" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img6" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl6" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat6" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title6" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author6" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img7" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl7" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat7" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title7" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author7" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img8" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl8" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat8" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title8" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author8" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img9" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl9" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat9" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title9" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author9" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img10" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl10" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat10" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title10" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author10" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img11" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl11" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat11" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title11" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author11" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img12" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl12" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat12" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title12" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author12" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img13" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl13" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat13" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title13" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author13" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+                <div id="img14" class="item post-overaly-style post-md"
+                     style="background-image:url(images/news/health/image1.png)">
+                    <a id="imgurl14" href="#" class="image-link">&nbsp;</a>
+                    <div class="overlay-post-content">
+                        <div class="post-content">
+                            <div class="grid-category">
+                                <a id="cat14" class="post-cat sports" href="#">Sports</a>
+                            </div>
+
+                            <h2 class="post-title">
+                                <a id="title14" href="#">Nancy Zhang a Chinese business woman </a>
+                            </h2>
+                            <div class="post-meta">
+                                <ul>
+                                    <li><a id="author14" href="#"><i class="fa fa-user"></i> John Wick</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Item 1 end -->
+            </div>
+            <!-- most-populers end-->
+        </div>
+        <!-- ts-populer-post-box end-->
+    </div>
+    <!-- container end-->
+</section>
+<!-- .section -->
+
+<div class="gap-50"></div>
+
+<!-- ts-copyright start -->
+<div class="ts-copyright">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-12 text-center">
+                <div class="copyright-content text-light">
+                    <p>Copyright &copy; 2019.Company name All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ts-copyright end-->
+
+<!-- backto -->
+<div class="top-up-btn">
+    <div class="backto" style="display: block;">
+        <a href="#" class="icon icon-arrow-up" aria-hidden="true"></a>
+    </div>
+</div>
+<!-- backto end-->
+
+<!-- Javascript Files
+================================================== -->
+
+<!-- initialize jQuery Library -->
+<script src="js/jquery.js"></script>
+<!-- Popper Jquery -->
+<script src="js/popper.min.js"></script>
+<!-- Bootstrap jQuery -->
+<script src="js/bootstrap.min.js"></script>
+<!-- magnific-popup -->
+<script src="js/jquery.magnific-popup.min.js"></script>
+<!-- Owl Carousel -->
+<script src="js/owl.carousel.min.js"></script>
+<!-- Color box -->
+<script src="js/jquery.colorbox.js"></script>
+<!-- Template custom -->
+<script src="js/custom.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title></title>
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--Favicon-->
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
+    <!-- CSS
+    ================================================== -->
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- IconFont -->
+    <link rel="stylesheet" href="css/iconfonts.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <!-- magnific -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <!-- Template styles-->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Responsive styles-->
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Colorbox -->
+    <link rel="stylesheet" href="css/colorbox.css">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <script src="js/myinit.js"></script>
+
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript">
+        function getQueryVariable(variable)
+        {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i=0;i<vars.length;i++) {
+                var pair = vars[i].split("=");
+                if(pair[0] == variable){return pair[1];}
+            }
+            return(false);
+        }
+
+        function pullANews() {
+            var id = getQueryVariable('id');
+            if(id==false){
+                window.location.href = "404.html";
+            }
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "article.php",
+                dataType: "json",
+                data: {
+                    'type' : 1,
+                    'id' : id
+                },
+                success: function (result) {
+                    console.log("ajax请求已发出");
+                    console.log(result);
+                    document.getElementById("atlTitle").innerText = result[0].title;
+                    document.getElementById("atlAuthor").innerText = result[0].author;
+                    document.getElementById("atlPosttime").innerText = result[0].postTime;
+                    document.getElementById("atlContent").innerHTML = result[0].content;
+                    document.getElementById("atlCV").innerText = result[0].cv;
+                    document.getElementById("atlCat").innerText = cat2str(result[0].cat);
+                    document.getElementById("atlCat2").innerText = cat2str(result[0].cat);
+                }
+            });
+        }
+
+        function cat2str(cat) {
+            switch (cat) {
+                case "0":
+                    return "未分类";
+                case "1":
+                    return "科技";
+                case "2":
+                    return "政治";
+                case "3":
+                    return "娱乐";
+                case "4":
+                    return "体育";
+                case "5":
+                    return "财经";
+                case "6":
+                    return "游戏";
+            }
+        }
+    </script>
+
+</head>
+
+<body onload="init();pullANews();">
+<div class="trending-bar trending-light d-md-block">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-md-6 text-center text-md-left">
+                <p class="trending-title"><i class="tsicon fa fa-bolt"></i> 实时热点</p>
+                <div id="trending-slide" class="owl-carousel owl-theme trending-slide">
+                    <div class="item">
+                        <div class="post-content">
+                            <h2 class="post-title title-small">
+                                <a href="#">The best MacBook Pro alternatives in 2017 for Apple users</a>
+                            </h2>
+                        </div><!-- Post content end -->
+                    </div><!-- Item 1 end -->
+                    <div class="item">
+                        <div class="post-content">
+                            <h2 class="post-title title-small">
+                                <a href="#">Soaring through Southern Patagonia with the Premium Byrd drone</a>
+                            </h2>
+                        </div><!-- Post content end -->
+                    </div><!-- Item 2 end -->
+                </div><!-- Carousel end -->
+            </div><!-- Col end -->
+            <div class="col-md text-md-right text-center">
+                <div class="ts-date">
+                    <i id="currentTime" class="fa fa-calendar-check-o"></i>
+                </div>
+            </div><!-- Col end -->
+            <div class="col-md text-md-right text-center">
+                <div class="item" id="loginItem">
+                    <button class="btn-success btn-sm" onclick="window.location.href = 'login.html'">登陆</button>
+                    <button class="btn-warning btn-sm" onclick="window.location.href = 'register.html'">注册</button>
+                </div>
+                <div class="item" id="logoutItem" style="display: none">
+                    <button class="btn-success btn-sm" id="user"></button>
+                    <button class="btn-warning btn-sm" onclick="logout()">退出</button>
+                </div>
+            </div>
+        </div><!--/ Row end -->
+    </div><!--/ Container end -->
+</div><!--/ Trending end -->
+
+<!-- Header start -->
+<header id="header" class="header">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-md-3 col-sm-12">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="images/logos/logo.png" alt="">
+                    </a>
+                </div>
+            </div><!-- logo col end -->
+
+            <div class="col-md-8 col-sm-12 header-right">
+                <div class="ad-banner float-right">
+                    <a href="#">
+                        <img src="images/banner-image/image1.png" class="img-fluid" alt="">
+                    </a>
+                </div>
+            </div><!-- header right end -->
+        </div><!-- Row end -->
+    </div><!-- Logo and banner area end -->
+</header><!--/ Header end -->
+
+<div class="main-nav clearfix is-ts-sticky">
+    <div class="container">
+        <div class="row justify-content-between">
+            <nav class="navbar navbar-expand-lg col-lg-8">
+                <div class="site-nav-inner float-left">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="true" aria-label="Toggle navigation">
+                        <span class="fa fa-bars"></span>
+                    </button>
+                    <!-- End of Navbar toggler -->
+                    <div id="navbarSupportedContent" class="collapse navbar-collapse navbar-responsive-collapse">
+                        <ul class="nav navbar-nav">
+
+                            <li>
+                                <a href="index.html">主页</a>
+                            </li>
+
+                            <li class="nav-item dropdown mega-dropdown">
+                                <a href="category.html" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-haspopup="true" aria-expanded="false">分类 <i class="fa fa-angle-down"></i></a>
+                                <!-- responsive dropdown -->
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="category.html">lifestyle 1</a></li>
+                                </ul>
+                                <!-- responsive dropdown end -->
+                                <div class="dropdown-menu mega-menu-content clearfix">
+                                    <div class="menu-tab">
+                                        <div class="row">
+                                            <ul class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
+                                                <li class="nav-item">
+                                                    <a class="animated fadeIn active" href="#tab-A" data-toggle="tab">
+											  			<span class="tab-head">
+															<span class="tab-text-title">Health</span>
+														</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+
+                                            <div class="tab-content col-10">
+                                                <div class="tab-pane fade show active" id="tab-A">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="post-block-style clearfix">
+                                                                <div class="post-thumb">
+                                                                    <a href="#"><img class="img-fluid"
+                                                                                     src="images/news/lifestyle/image1.jpg"
+                                                                                     alt=""/></a>
+                                                                </div>
+                                                                <div class="post-content">
+                                                                    <h2 class="post-title title-small">
+                                                                        <a href="#">That wearable on your wrist soon
+                                                                            track your…</a>
+                                                                    </h2>
+                                                                </div><!-- Post content end -->
+                                                            </div><!-- Post Block style end -->
+                                                        </div>
+                                                    </div>
+                                                </div><!-- Tab pane 1 end -->
+                                            </div> <!-- Tab pane 2 end -->
+                                        </div>
+                                    </div><!-- Menu tab end -->
+                                </div><!-- Mega menu end -->
+                            </li><!-- Tab menu end -->
+
+                            <li>
+                                <a href="contact.html">投诉建议</a>
+                            </li>
+                        </ul><!--/ Nav ul end -->
+                    </div><!--/ Collapse end -->
+
+                </div><!-- Site Navbar inner end -->
+            </nav><!--/ Navigation end -->
+
+            <div class="col-lg-4 text-right nav-social-wrap">
+                <div class="top-social">
+                    <ul class="social list-unstyled">
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                    </ul>
+                </div>
+
+
+                <div class="nav-search">
+                    <a href="#search-popup" class="xs-modal-popup">
+                        <i class="icon icon-search1"></i>
+                    </a>
+                </div><!-- Search end -->
+
+                <div class="zoom-anim-dialog mfp-hide modal-searchPanel ts-search-form" id="search-popup">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="xs-search-panel">
+                                <form class="ts-search-group">
+                                    <div class="input-group">
+                                        <input type="search" class="form-control" name="s" placeholder="Search"
+                                               value="">
+                                        <button class="input-group-btn search-button">
+                                            <i class="icon icon-search1"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End xs modal -->
+            </div>
+        </div><!--/ Row end -->
+    </div><!--/ Container end -->
+</div><!-- Menu wrapper end -->
+
+<!-- breadcrumb -->
+<div class="breadcrumb-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <ol class="breadcrumb">
+                    <li>
+                        <i class="fa fa-home"></i>
+                        <a href="#">Home</a>
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li><a href="#">lifestyle</a></li>
+                    <li><i class="fa fa-angle-right"></i>Struggling to sell one..</li>
+                </ol>
+            </div>
+        </div><!-- row end -->
+    </div><!-- container end -->
+</div>
+<!-- breadcrumb end -->
+
+<section class="main-content pt-0">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="single-post">
+                    <div class="post-header-area">
+                        <h2 id="atlTitle" class="post-title title-lg">Struggling to sell one multi-million dollar on
+                            home currently on
+                            the market.</h2>
+                        <ul class="post-meta">
+                            <li>
+                                <a id="atlCat" href="#" class="post-cat fashion">Fashion</a>
+                            </li>
+                            <li class="post-author">
+                                <a href="#"><strong id="atlAuthor">John Wick</strong></a>
+                            </li>
+                            <li><a id="atlPosttime" href="#"><i class="fa fa-clock-o"></i> 20 July, 2020</a></li>
+                            <li><a href="#"><i class="fa fa-comments"></i>5 Comments</a></li>
+                            <li><a href="#" class="view"><i class="icon icon-fire"></i> <span id="atlCV"></span></a></li>
+                            <li class="social-share">
+                                <i class="shareicon fa fa-share"></i>
+                                <ul class="social-list">
+                                    <li><a data-social="facebook" class="facebook" href="#"
+                                           title="The billionaire Philan thropist read to learn more and city"><i
+                                            class="fa fa-facebook"></i></a></li>
+                                    <li><a data-social="twitter" class="twitter" href="#"
+                                           title="The billionaire Philan thropist read to learn more and city"><i
+                                            class="fa fa-twitter"></i></a></li>
+                                    <li><a data-social="linkedin" class="linkedin" href="#"
+                                           title="The billionaire Philan thropist read to learn more and city"><i
+                                            class="fa fa-linkedin"></i></a></li>
+                                    <li><a data-social="pinterest" class="pinterest" href="#"
+                                           title="The billionaire Philan thropist read to learn more and city"><i
+                                            class="fa fa-pinterest-p"></i></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!-- post-header-area end -->
+                    <div id="atlContent" class="post-content-area">
+
+                    </div><!-- post-content-area end -->
+                    <div class="post-footer">
+                        <div class="tag-lists">
+                            <span>分类 </span><a id="atlCat2" href="#">fashion</a>
+                        </div><!-- tag lists -->
+                        <div class="post-navigation clearfix">
+                            <div class="post-previous float-left">
+                                <a href="#">
+                                    <img src="images/news/travel/image3.png" alt="">
+                                    <span>Read Previous</span>
+                                    <p>
+                                        Lopez has reportedly added to her real estate
+                                    </p>
+                                </a>
+                            </div>
+                            <div class="post-next float-right">
+                                <a href="#">
+                                    <img src="images/news/tech/tech1.png" alt="">
+                                    <span>Read Next</span>
+                                    <p>
+                                        Bel-Air anchored by a multi-level mansion
+                                    </p>
+                                </a>
+                            </div>
+                        </div><!-- post navigation -->
+                        <div class="gap-30"></div>
+                        <!-- comments start -->
+                        <div class="comments-area">
+                            <h3 class="block-title"><span>03 Comments</span></h3>
+                            <ul class="comments-list">
+                                <li>
+                                    <div class="comment">
+                                        <img class="comment-avatar pull-left" alt="" src="images/news/user1.png">
+                                        <div class="comment-body">
+                                            <div class="meta-data">
+                                                <span class="comment-author">Michelle Aimber</span>
+                                            </div>
+                                            <div class="comment-content">
+                                                <p>High Life tempor retro Truffaut. Tofu mixtape twee, assumenda quinoa
+                                                    flexitarian aesthetic artisan vinyl pug. Chambray et Carles
+                                                    Thundercats cardigan actually, magna bicycle rights.</p></div>
+                                            <div class="text-left">
+                                                <a class="comment-reply" href="#">Reply</a>
+                                            </div>
+                                        </div>
+                                    </div><!-- Comments end -->
+
+                                    <ul class="comments-reply">
+                                        <li>
+                                            <div class="comment">
+                                                <img class="comment-avatar pull-left" alt=""
+                                                     src="images/news/user2.png">
+                                                <div class="comment-body">
+                                                    <div class="meta-data">
+                                                        <span class="comment-author">Genelia Dusteen</span>
+                                                    </div>
+                                                    <div class="comment-content">
+                                                        <p>Farm-to-table selfies labore, leggings cupidatat sunt
+                                                            taxidermy umami fanny pack typewriter hoodie art party
+                                                            voluptate cardigan banjo.</p></div>
+                                                    <div class="text-left">
+                                                        <a class="comment-reply" href="#">Reply</a>
+                                                    </div>
+                                                </div>
+                                            </div><!-- Comments end -->
+                                        </li>
+                                    </ul><!-- comments-reply end -->
+                                    <div class="comment last">
+                                        <img class="comment-avatar pull-left" alt="" src="images/news/user1.png">
+                                        <div class="comment-body">
+                                            <div class="meta-data">
+                                                <span class="comment-author">Michelle Aimber</span>
+                                            </div>
+                                            <div class="comment-content">
+                                                <p>VHS Wes Anderson Banksy food truck vero. Farm-to-table selfies
+                                                    labore, leggings cupidatat sunt taxidermy umami fanny pack
+                                                    typewriter hoodie art party voluptate cardigan banjo.</p></div>
+                                            <div class="text-left">
+                                                <a class="comment-reply" href="#">Reply</a>
+                                            </div>
+                                        </div>
+                                    </div><!-- Comments end -->
+                                </li><!-- Comments-list li end -->
+                            </ul><!-- Comments-list ul end -->
+                        </div><!-- comment end -->
+                        <!-- comment form -->
+                        <div class="gap-50 d-none d-md-block"></div>
+                        <div class="comments-form">
+                            <h3 class="title-normal">Leave a comment</h3>
+                            <form method="POST" action="#">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <textarea class="form-control input-msg required-field" id="message"
+                                                      placeholder="Your Comment" rows="10" required=""></textarea>
+                                        </div>
+                                    </div><!-- Col end -->
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input class="form-control" name="name" id="name" placeholder="Your Name"
+                                                   type="text" required="">
+                                        </div>
+                                    </div><!-- Col end -->
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input class="form-control" name="email" id="email" placeholder="Your Email"
+                                                   type="email" required="">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input class="form-control" placeholder="Your Website" type="text"
+                                                   required="">
+                                        </div>
+                                    </div>
+                                </div><!-- Form row end -->
+                                <div class="clearfix">
+                                    <button class="comments-btn btn btn-primary" type="submit">Post Comment</button>
+                                </div>
+                            </form><!-- Form end -->
+                        </div><!-- comment form end -->
+                    </div>
+                </div><!-- single-post end -->
+            </div><!-- col-lg-8 -->
+        </div><!-- row end -->
+    </div><!-- container end -->
+</section><!-- category-layout end -->
+
+<!-- ts-copyright start -->
+<div class="ts-copyright">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-12 text-center">
+                <div class="copyright-content text-light">
+                    <p>Copyright &copy; 2019.Company name All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ts-copyright end-->
+
+<!-- backto -->
+<div class="top-up-btn">
+    <div class="backto" style="display: block;">
+        <a href="#" class="icon icon-arrow-up" aria-hidden="true"></a>
+    </div>
+</div>
+<!-- backto end-->
+
+<!-- Javascript Files
+================================================== -->
+
+<!-- initialize jQuery Library -->
+<script src="js/jquery.js"></script>
+<!-- Popper Jquery -->
+<script src="js/popper.min.js"></script>
+<!-- Bootstrap jQuery -->
+<script src="js/bootstrap.min.js"></script>
+<!-- magnific-popup -->
+<script src="js/jquery.magnific-popup.min.js"></script>
+<!-- Owl Carousel -->
+<script src="js/owl.carousel.min.js"></script>
+<!-- Color box -->
+<script src="js/jquery.colorbox.js"></script>
+<!-- Template custom -->
+<script src="js/custom.js"></script>
+
+</body>
+</html>

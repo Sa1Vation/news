@@ -1,0 +1,340 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>新建新闻</title>
+    <!-- CSS
+================================================== -->
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- IconFont -->
+    <link rel="stylesheet" href="/css/iconfonts.css">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/owl.theme.default.min.css">
+    <!-- magnific -->
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+
+
+    <link rel="stylesheet" href="/css/animate.css">
+
+    <!-- Template styles-->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Responsive styles-->
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <!-- Colorbox -->
+    <link rel="stylesheet" href="/css/colorbox.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/skin/layer.css" rel="external nofollow"
+          rel="stylesheet">
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script type="text/javascript" charset="utf-8" src="../ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="editor_api.js"></script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="../lang/zh-cn/zh-cn.js"></script>
+
+    <style type="text/css">
+        div {
+            width: 100%;
+        }
+    </style>
+
+    <script src="/js/jquery.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>
+
+    <script>
+        var uploading = false;
+        var cover = "";
+
+        function upload() {
+            var flag = false;
+            //首先封装一个方法 传入一个监听函数 返回一个绑定了监听函数的XMLHttpRequest对象
+            var xhrOnProgress = function (fun) {
+                xhrOnProgress.onprogress = fun; //绑定监听
+                //使用闭包实现监听绑
+                return function () {
+                    //通过$.ajaxSettings.xhr();获得XMLHttpRequest对象
+                    var xhr = $.ajaxSettings.xhr();
+                    //判断监听函数是否为函数
+                    if (typeof xhrOnProgress.onprogress !== 'function')
+                        return xhr;
+                    //如果有监听函数并且xhr对象支持绑定时就把监听函数绑定上去
+                    if (xhrOnProgress.onprogress && xhr.upload) {
+                        xhr.upload.onprogress = xhrOnProgress.onprogress;
+                    }
+                    return xhr;
+                }
+            }
+            var data = new FormData($('#mainForm')[0]); //要加【0】
+            console.log(data);
+            if (uploading) {
+                layer.alert("文件正在上传中，请稍候");
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/uploadImg.php',  //当前路径
+                data: data,
+                dataType: 'json',
+                processData: false,  //序列化，no
+                contentType: false,  //不设置内容类型
+                beforeSend: function () {
+                    uploading = true;
+                },
+                //进度条要调用原生xhr
+                xhr: xhrOnProgress(function (evt) {
+                    var percent = Math.floor(evt.loaded / evt.total * 100);//计算百分比
+                    console.log(percent);
+                    // 设置进度条样式
+                    $('#jdt').css('width', percent * 3 + 'px');
+                    $('#jdt').css('background', 'skyblue');
+                    //显示进度百分比
+                    $('#jdt').text(percent + '%');
+                    $('#loaded').text(evt.loaded / 1024 + 'K');
+                    $('#total').text(evt.total / 1024 + 'K');
+                }),
+                success: function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.message, {icon: 1, time: 3000});
+                        cover = data.cover;
+                        //成功后关闭修改页
+                        setTimeout(function () {
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe的索引
+                            parent.layer.close(index);  //在执行关闭
+                        }, 2000);
+                        //还有刷新下iframe的界面
+                        document.getElementById("publish").style.display = "block";
+                        document.getElementById("uploadtool").style.display = "none";
+                        //parent.location.reload();
+                        flag = true;
+                    } else {
+                        layer.msg(data.message, {icon: 2, time: 3000});
+                    }
+                    uploading = false;
+                },
+                error: function (data) {
+                    alert('服务异常，请稍后重试');
+                    console.log(data);
+                }
+            });
+        }
+
+        function save() {
+            var cat = document.getElementById("cat").value;
+            var title = document.getElementById("title").value;
+            var author = document.getElementById("author").value;
+            var content = UE.getEditor('editor').getContent();
+            alert(title);
+            alert(author);
+            alert(content);
+            if (title != "" && author != "" && content != "" && cat != 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/announce.php",
+                    dataType: "json",
+                    data: {
+                        "title": title,
+                        "author": author,
+                        "content": content,
+                        "cover": cover,
+                        "cat": cat
+                    },
+                    success: function (result) {
+                        if (eval(result).status == 0) {
+                            alert("新闻已发布");
+                            window.location.href = "/newsManage.html"
+                        } else {
+                            alert("未知错误");
+                        }
+                    }
+                })
+            } else {
+                alert("请完整填写！");
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div>
+            <h1>新建新闻</h1>
+            <form id="atlForm" onsubmit="return false" action="##" method="post">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control" id="title" name="title" placeholder="请输入文章标题"/>
+                </div>
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control" id="author" name="author" placeholder="请输入作者"/>
+                </div>
+            </form>
+            <form onsubmit="return false" action="##" method="post">
+                <select id="cat" class="custom-select">
+                    <option value ="0">请选择分类</option>
+                    <option value ="1">科技</option>
+                    <option value ="2">政治</option>
+                    <option value ="3">娱乐</option>
+                    <option value ="4">体育</option>
+                    <option value ="5">财经</option>
+                    <option value ="6">游戏</option>
+                </select>
+            </form><br/>
+
+            <script id="editor" type="text/plain" style="height: 500px"></script>
+        </div>
+        <div class="gap-20"></div>
+        <div>
+            <div style="width:300px;height: 20px;border: 1px solid #CCC;">
+                <!-- 内层div 逐渐递增的进度条 -->
+                <div id="jdt" style="height: 20px;"></div>
+            </div>
+            <p>总大小<span id="total"></span>；已上传<span id="loaded"></span>；</p><br>
+            <div id="uploadtool">
+                <form id="mainForm">
+                    选择文件：<input type="file" name="file">
+                    <input type="button" value="上传" onclick="upload()">
+                </form>
+            </div>
+        </div>
+        <div class="gap-20"></div>
+        <div>
+            <button id="publish" onclick="save()" class="btn btn-warning" style="display: none">发布新闻</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    var ue = UE.getEditor('editor');
+
+
+    function isFocus(e) {
+        alert(UE.getEditor('editor').isFocus());
+        UE.dom.domUtils.preventDefault(e)
+    }
+
+    function setblur(e) {
+        UE.getEditor('editor').blur();
+        UE.dom.domUtils.preventDefault(e)
+    }
+
+    function insertHtml() {
+        var value = prompt('插入html代码', '');
+        UE.getEditor('editor').execCommand('insertHtml', value)
+    }
+
+    function createEditor() {
+        enableBtn();
+        UE.getEditor('editor');
+    }
+
+    function getAllHtml() {
+        alert(UE.getEditor('editor').getAllHtml())
+    }
+
+    function getContent() {
+        var arr = [];
+        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getContent());
+        alert(arr.join("\n"));
+    }
+
+    function getPlainTxt() {
+        var arr = [];
+        arr.push("使用editor.getPlainTxt()方法可以获得编辑器的带格式的纯文本内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getPlainTxt());
+        alert(arr.join('\n'))
+    }
+
+    function setContent(isAppendTo) {
+        var arr = [];
+        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
+        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
+        alert(arr.join("\n"));
+    }
+
+    function setDisabled() {
+        UE.getEditor('editor').setDisabled('fullscreen');
+        disableBtn("enable");
+    }
+
+    function setEnabled() {
+        UE.getEditor('editor').setEnabled();
+        enableBtn();
+    }
+
+    function getText() {
+        //当你点击按钮时编辑区域已经失去了焦点，如果直接用getText将不会得到内容，所以要在选回来，然后取得内容
+        var range = UE.getEditor('editor').selection.getRange();
+        range.select();
+        var txt = UE.getEditor('editor').selection.getText();
+        alert(txt)
+    }
+
+    function getContentTxt() {
+        var arr = [];
+        arr.push("使用editor.getContentTxt()方法可以获得编辑器的纯文本内容");
+        arr.push("编辑器的纯文本内容为：");
+        arr.push(UE.getEditor('editor').getContentTxt());
+        alert(arr.join("\n"));
+    }
+
+    function hasContent() {
+        var arr = [];
+        arr.push("使用editor.hasContents()方法判断编辑器里是否有内容");
+        arr.push("判断结果为：");
+        arr.push(UE.getEditor('editor').hasContents());
+        alert(arr.join("\n"));
+    }
+
+    function setFocus() {
+        UE.getEditor('editor').focus();
+    }
+
+    function deleteEditor() {
+        disableBtn();
+        UE.getEditor('editor').destroy();
+    }
+
+    function disableBtn(str) {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            if (btn.id == str) {
+                UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+            } else {
+                btn.setAttribute("disabled", "true");
+            }
+        }
+    }
+
+    function enableBtn() {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+        }
+    }
+
+    function getLocalData() {
+        alert(UE.getEditor('editor').execCommand("getlocaldata"));
+    }
+
+    function clearLocalData() {
+        UE.getEditor('editor').execCommand("clearlocaldata");
+        alert("已清空草稿箱")
+    }
+</script>
+</body>
+</html>
