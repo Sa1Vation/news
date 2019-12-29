@@ -62,7 +62,7 @@
                         "username": username,
                         "password": password,
                         "mail": mail,
-                        "tel":tel
+                        "tel": tel
                     },
                     success: function (result) {
                         if (result == "registerSuccess") {
@@ -155,6 +155,43 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $("#username").blur(function () {
+        var name = $("#name").val();
+        if (name.length <= 16 && name.length >= 4) {
+            $("#username").css("border", "1px solid #888");
+        } else {
+            $("#username").css("border", "1px solid #FF0400");
+        }
+    })
+    $("#conpassword").blur(function () {
+        var pass = $("#password").val();
+        var conpass = $("#conpassword").val();
+        if (pass == conpass) {
+            $("#conpassword").css("border", "1px solid #888");
+        } else {
+            $("#conpassword").css("border", "1px solid #FF0400");
+        }
+    })
+    $("#mail").blur(function () {
+        var email = $("#mail").val();
+        var pattern = /^[a-z0-9]([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
+        if (pattern.test(email)) {
+            $("#mail").css("border", "1px solid #888");
+        } else {
+            $("#mail").css("border", "1px solid #FF0400");
+        }
+    })
+    $("#tel").blur(function () {
+        var phone = $("#tel").val();
+        var pattern = /^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/;
+        if (pattern.test(phone)) {
+            $("#tel").css("border", "1px solid #888");
+        } else {
+            $("#tel").css("border", "1px solid #FF0400");
+        }
+    })
+</script>
 
 </body>
 </html>

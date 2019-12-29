@@ -37,12 +37,12 @@ function getTime() {     	//获取时间
 function loadData() {
     var username = localStorage.getItem("username");
     if (username == null || username == "#username") {
-        document.getElementById("loginItem").style.display = "block";
-        document.getElementById("logoutItem").style.display = "none";
+        $("#loginItem").css("display","block");
+        $("#logoutItem").css("display","none");
     } else {
-        document.getElementById("loginItem").style.display = "none";
-        document.getElementById("logoutItem").style.display = "block";
-        document.getElementById("user").innerText = username;
+        $("#loginItem").css("display","none");
+        $("#logoutItem").css("display","block");
+        $("#user").html(username);
     }
 }
 
@@ -91,18 +91,4 @@ function pullCat() {
     })
 }
 
-function pullNews(type,startRow,rows) {
-    $.ajax({
-        type: "POST",
-        url: "news.php?action=pullNews",
-        dataType: "json",
-        data: {
-            "cato": type,
-            "startRow": startRow,
-            "rows": rows
-        },
-        success: function (result) {
-            return result;
-        }
-    })
-}
+

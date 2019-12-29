@@ -46,15 +46,25 @@
     <script type="text/javascript">
         var currentPage = 1;
         var type = 0;
-        var totalRows = getCookie("totalRows");
+        var startRow = (currentPage - 1) * 8;
 
-        function loadNews() {
-            var startRow = (currentPage - 1) * 8;
-            if (totalRows <= 8) {
-                result = pullNews(type, startRow, totalRows);
-            } else {
-                result = pullNews(type, startRow, 8);
-            }
+        function pullNews() {
+            $.ajax({
+                type: "POST",
+                url: "news.php?action=pullNews",
+                dataType: "json",
+                data: {
+                    "cato": type,
+                    "startRow": startRow,
+                    "rows": 8
+                },
+                success: function (result) {
+                    loadNews(result);
+                }
+            })
+        }
+
+        function loadNews(result) {
             var i = 1
             for (let article in result) {
                 if (i > 8) {
@@ -64,7 +74,7 @@
                 i = i + 1;
             }
 
-            console.log(getCookie('totalRows'));
+            var totalRows = getCookie('totalRows');
             if (totalRows > 8) {
                 pagination();
             }
@@ -107,7 +117,7 @@
                     currentPage = $(this).children("a")[0].innerHTML;
                 }
                 $("#pagination").empty();
-                loadNews();
+                pullNews();
             })
 
         }
@@ -135,7 +145,7 @@
 
 </head>
 
-<body onload="init();loadNews();">
+<body onload="init();pullNews();">
 
 <div class="trending-bar trending-light d-md-block">
     <div class="container">

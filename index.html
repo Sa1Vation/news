@@ -65,7 +65,23 @@
     <script src="js/custom.js"></script>
 
     <script type="text/javascript">
-        function lopadNews(result){
+        function pullNews() {
+            $.ajax({
+                type: "POST",
+                url: "news.php?action=pullNews",
+                dataType: "json",
+                data: {
+                    "cato": 0,
+                    "startRow": 0,
+                    "rows": 14
+                },
+                success: function (result) {
+                    loadNews(result);
+                }
+            })
+        }
+
+        function loadNews(result){
             var i = 1
             for (let article in result) {
                 var url = "/news/article.html?id="+result[article].newsId;
@@ -100,12 +116,31 @@
                 }
             }
         }
+
+        function cat2str(cat) {
+            switch (cat) {
+                case "0":
+                    return "未分类";
+                case "1":
+                    return "科技";
+                case "2":
+                    return "政治";
+                case "3":
+                    return "娱乐";
+                case "4":
+                    return "体育";
+                case "5":
+                    return "财经";
+                case "6":
+                    return "游戏";
+            }
+        }
     </script>
 
 
 </head>
 
-<body onload="init();loadNews(pullNews(0,1,14));pullCat();">
+<body onload="init();pullNews();pullCat();">
 <div class="trending-bar trending-light d-md-block">
     <div class="container">
         <div class="row justify-content-between">
