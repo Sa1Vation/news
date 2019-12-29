@@ -56,7 +56,7 @@
             if (password == conpassword) {
                 $.ajax({
                     type: "POST",
-                    url: "register.php",
+                    url: "news.php?action=register",
                     dataType: "text",
                     data: {
                         "username": username,

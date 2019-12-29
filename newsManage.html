@@ -52,7 +52,7 @@
             var startRow = (currentPage - 1) * 8;
             $.ajax({
                 type: "POST",
-                url: "pullNews.php",
+                url: "news.php?action=pullNews",
                 dataType: "json",
                 data: {
                     "cato": type,
@@ -65,7 +65,7 @@
                         if (i > 8) {
                             return;
                         }
-                        addANews(i, result[article].title, result[article].author, result[article].postTime, result[article].cover);
+                        addANews(i, result[article].title, result[article].author, result[article].postTime, result[article].cover, result[article].newsId, result[article].cat);
                         i = i + 1;
                     }
 
@@ -75,11 +75,15 @@
             })
         }
 
-        function addANews(i, title, author, posttime, cover) {
-            document.getElementById("title" + i.toString()).innerText = title;
-            document.getElementById("author" + i.toString()).innerText = author;
-            document.getElementById("posttime" + i.toString()).innerText = posttime;
-            document.getElementById("img" + i.toString()).setAttribute("src", cover);
+        function addANews(i, title, author, posttime, cover, id, cat) {
+            console.log(id);
+            $(".post-thumb > a").eq(i - 1).attr("href", "article.html?id=" + id);
+            $(".post-content > h2 > a").eq(i + 1).attr("href", "article.html?id=" + id);
+            $(".post-content > h2 > a").eq(i + 1).html(title);
+            $(".post-thumb > a > img").eq(i - 1).attr("src", cover);
+            $(".post-thumb > div > a").eq(i - 1).html(cat2str(cat));
+            $(".post-content > div > span").eq(2 * i - 2).html(author);
+            $(".post-content > div > span").eq(2 * i - 1).html(posttime);
         }
 
         function pagination() {
@@ -111,6 +115,25 @@
                 pullNews();
             })
 
+        }
+
+        function cat2str(cat) {
+            switch (cat) {
+                case "0":
+                    return "未分类";
+                case "1":
+                    return "科技";
+                case "2":
+                    return "政治";
+                case "3":
+                    return "娱乐";
+                case "4":
+                    return "体育";
+                case "5":
+                    return "财经";
+                case "6":
+                    return "游戏";
+            }
         }
     </script>
 
@@ -229,21 +252,44 @@
                     <div class="post-block-style">
                         <div class="post-thumb">
                             <a href="#">
-                                <img id="img1" class="img-fluid" src="images/news/health/image2.png" alt="">
+                                <img class="img-fluid" src="images/news/health/image2.png" alt="">
                             </a>
                             <div class="grid-cat">
-                                <a id="cat1" class="post-cat lifestyle" href="#">Lifestyle</a>
+                                <a class="post-cat lifestyle" href="#">Lifestyle</a>
                             </div>
                         </div>
 
                         <div class="post-content">
                             <h2 class="post-title title-md">
-                                <a id="title1" href="#">Ratcliffe to be Director of nation intelligence Trump
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
                                     ignored</a>
                             </h2>
                             <div class="post-meta mb-7">
-                                <span id="author1" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime1" class="post-date"><i
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
+                            </div>
+                        </div><!-- Post content end -->
+                    </div>
+                </div><!-- col end -->
+                <div class="col-md-6">
+                    <div class="post-block-style">
+                        <div class="post-thumb">
+                            <a href="#">
+                                <img class="img-fluid" src="images/news/travel/image3.png" alt="">
+                            </a>
+                            <div class="grid-cat">
+                                <a class="post-cat lifestyle" href="#">Lifestyle</a>
+                            </div>
+                        </div>
+
+                        <div class="post-content">
+                            <h2 class="post-title title-md">
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
+                                    ignored</a>
+                            </h2>
+                            <div class="post-meta mb-7">
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
                                         class="fa fa-clock-o"></i> 29 July, 2020</span>
                             </div>
                         </div><!-- Post content end -->
@@ -253,70 +299,21 @@
                     <div class="post-block-style">
                         <div class="post-thumb">
                             <a href="#">
-                                <img id="img2" class="img-fluid" src="images/news/travel/image3.png" alt="">
+                                <img class="img-fluid" src="images/news/fashion/image4.png" alt="">
                             </a>
                             <div class="grid-cat">
-                                <a id="cat2" class="post-cat lifestyle" href="#">Lifestyle</a>
+                                <a class="post-cat health" href="#">Health</a>
                             </div>
                         </div>
 
                         <div class="post-content">
                             <h2 class="post-title title-md">
-                                <a id="title2" href="#">Ratcliffe to be Director of nation intelligence Trump
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
                                     ignored</a>
                             </h2>
                             <div class="post-meta mb-7">
-                                <span id="author2" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime2" class="post-date"><i
-                                        class="fa fa-clock-o"></i> 29 July, 2020</span>
-                            </div>
-                        </div><!-- Post content end -->
-                    </div>
-                </div><!-- col end -->
-                <div class="col-md-6">
-                    <div class="post-block-style">
-                        <div class="post-thumb">
-                            <a href="#">
-                                <img id="img3" class="img-fluid" src="images/news/fashion/image4.png" alt="">
-                            </a>
-                            <div class="grid-cat">
-                                <a id="cat3" class="post-cat health" href="#">Health</a>
-                            </div>
-                        </div>
-
-                        <div class="post-content">
-                            <h2 class="post-title title-md">
-                                <a id="title3" href="#">Ratcliffe to be Director of nation intelligence Trump
-                                    ignored</a>
-                            </h2>
-                            <div class="post-meta mb-7">
-                                <span id="author3" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime3" class="post-date"><i
-                                        class="fa fa-clock-o"></i> 29 July, 2020</span>
-                            </div>
-
-                        </div><!-- Post content end -->
-                    </div>
-                </div><!-- col end -->
-                <div class="col-md-6">
-                    <div class="post-block-style">
-                        <div class="post-thumb">
-                            <a href="#">
-                                <img id="img4" class="img-fluid" src="images/news/lifestyle/image4.png" alt="">
-                            </a>
-                            <div class="grid-cat">
-                                <a id="cat4" class="post-cat health" href="#">Health</a>
-                            </div>
-                        </div>
-
-                        <div class="post-content">
-                            <h2 class="post-title title-md">
-                                <a id="title4" href="#">Ratcliffe to be Director of nation intelligence Trump
-                                    ignored</a>
-                            </h2>
-                            <div class="post-meta mb-7">
-                                <span id="author4" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime4" class="post-date"><i
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
                                         class="fa fa-clock-o"></i> 29 July, 2020</span>
                             </div>
 
@@ -327,21 +324,21 @@
                     <div class="post-block-style">
                         <div class="post-thumb">
                             <a href="#">
-                                <img id="img5" class="img-fluid" src="images/news/food/food01.png" alt="">
+                                <img class="img-fluid" src="images/news/lifestyle/image4.png" alt="">
                             </a>
                             <div class="grid-cat">
-                                <a id="cat5" class="post-cat health" href="#">Health</a>
+                                <a class="post-cat health" href="#">Health</a>
                             </div>
                         </div>
 
                         <div class="post-content">
                             <h2 class="post-title title-md">
-                                <a id="title5" href="#">Ratcliffe to be Director of nation intelligence Trump
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
                                     ignored</a>
                             </h2>
                             <div class="post-meta mb-7">
-                                <span id="author5" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime5" class="post-date"><i
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
                                         class="fa fa-clock-o"></i> 29 July, 2020</span>
                             </div>
 
@@ -352,21 +349,21 @@
                     <div class="post-block-style">
                         <div class="post-thumb">
                             <a href="#">
-                                <img id="img6" class="img-fluid" src="images/news/lifestyle/image3.png" alt="">
+                                <img class="img-fluid" src="images/news/food/food01.png" alt="">
                             </a>
                             <div class="grid-cat">
-                                <a id="cat6" class="post-cat health" href="#">Health</a>
+                                <a class="post-cat health" href="#">Health</a>
                             </div>
                         </div>
 
                         <div class="post-content">
                             <h2 class="post-title title-md">
-                                <a id="title6" href="#">Ratcliffe to be Director of nation intelligence Trump
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
                                     ignored</a>
                             </h2>
                             <div class="post-meta mb-7">
-                                <span id="author6" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime6" class="post-date"><i
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
                                         class="fa fa-clock-o"></i> 29 July, 2020</span>
                             </div>
 
@@ -377,21 +374,21 @@
                     <div class="post-block-style">
                         <div class="post-thumb">
                             <a href="#">
-                                <img id="img7" class="img-fluid" src="images/news/fashion/image2.png" alt="">
+                                <img class="img-fluid" src="images/news/lifestyle/image3.png" alt="">
                             </a>
                             <div class="grid-cat">
-                                <a id="cat7" class="post-cat health" href="#">Health</a>
+                                <a class="post-cat health" href="#">Health</a>
                             </div>
                         </div>
 
                         <div class="post-content">
                             <h2 class="post-title title-md">
-                                <a id="title7" href="#">Ratcliffe to be Director of nation intelligence Trump
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
                                     ignored</a>
                             </h2>
                             <div class="post-meta mb-7">
-                                <span id="author7" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime7" class="post-date"><i
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
                                         class="fa fa-clock-o"></i> 29 July, 2020</span>
                             </div>
 
@@ -402,21 +399,46 @@
                     <div class="post-block-style">
                         <div class="post-thumb">
                             <a href="#">
-                                <img id="img8" class="img-fluid" src="images/news/fashion/image3.png" alt="">
+                                <img class="img-fluid" src="images/news/fashion/image2.png" alt="">
                             </a>
                             <div class="grid-cat">
-                                <a id="cat8" class="post-cat fashion" href="#">Fashion</a>
+                                <a class="post-cat health" href="#">Health</a>
                             </div>
                         </div>
 
                         <div class="post-content">
                             <h2 class="post-title title-md">
-                                <a id="title8" href="#">Ratcliffe to be Director of nation intelligence Trump
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
                                     ignored</a>
                             </h2>
                             <div class="post-meta mb-7">
-                                <span id="author8" class="post-author"><i class="fa fa-user"></i> John Doe</span>
-                                <span id="posttime8" class="post-date"><i
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
+                                        class="fa fa-clock-o"></i> 29 July, 2020</span>
+                            </div>
+
+                        </div><!-- Post content end -->
+                    </div>
+                </div><!-- col end -->
+                <div class="col-md-6">
+                    <div class="post-block-style">
+                        <div class="post-thumb">
+                            <a href="#">
+                                <img class="img-fluid" src="images/news/fashion/image3.png" alt="">
+                            </a>
+                            <div class="grid-cat">
+                                <a class="post-cat fashion" href="#">Fashion</a>
+                            </div>
+                        </div>
+
+                        <div class="post-content">
+                            <h2 class="post-title title-md">
+                                <a href="#">Ratcliffe to be Director of nation intelligence Trump
+                                    ignored</a>
+                            </h2>
+                            <div class="post-meta mb-7">
+                                <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
+                                <span class="post-date"><i
                                         class="fa fa-clock-o"></i> 29 July, 2020</span>
                             </div>
 

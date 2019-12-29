@@ -52,7 +52,7 @@
             var password = document.getElementById("password").value;
             $.ajax({
                 type: "POST",
-                url: "login.php",
+                url: "news.php?action=login",
                 dataType: "json",
                 data: {
                     "username": username,

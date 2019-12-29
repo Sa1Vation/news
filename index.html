@@ -52,7 +52,7 @@
         function pullNews(type) {
             $.ajax({
                 type: "POST",
-                url: "pullNews.php",
+                url: "news.php?action=pullNews",
                 dataType: "json",
                 data: {
                     "cato": type,
