@@ -25,7 +25,6 @@ jQuery(function($) {
 		event.stopPropagation();
 		$(this).siblings().slideToggle();
 	});
-	
 
 	$('.nav-tabs[data-toggle="tab-hover"] > li > a').hover( function(){
     	$(this).tab('show');

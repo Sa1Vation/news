@@ -3,16 +3,36 @@
 //announce
 header('content-type:application/json;charset=utf8');
 
+define("servername", "localhost");
+define("username", "root");
+define("password", "root1234");
+define("dbname", "news");
+
+class News
+{
+    public $newsId;
+    public $title;
+    public $author;
+    public $postTime;
+    public $cover;
+    public $cv;
+    public $cat;
+    public $content;
+}
+
+class Cat
+{
+    public $id;
+    public $name;
+}
+
 
 function publish($title, $author, $content, $cover, $cat)
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "root1234";
-    $dbname = "news";
 
 // 创建连接
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli(servername, username, password, dbname);
+    mysqli_set_charset($conn,"utf8");
 // 检测连接
     if ($conn->connect_error) {
         die("连接失败: " . $conn->connect_error);
@@ -37,28 +57,13 @@ function redirect($url)
     exit();
 }
 
-class News
-{
-    public $newsId;
-    public $title;
-    public $author;
-    public $postTime;
-    public $cover;
-    public $cv;
-    public $cat;
-    public $content;
-}
-
 function getNews($id)
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "root1234";
-    $dbname = "news";
 
     $data = array();
 // 创建连接
-    $con = mysqli_connect($servername, $username, $password, $dbname);
+    $con = mysqli_connect(servername, username, password, dbname);
+    mysqli_set_charset($con,"utf8");
 // 检测连接
     $int_id = (int)$id;
     $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id, atl_Content FROM article WHERE atl_Id=" . $int_id . ";";
@@ -91,19 +96,12 @@ function getNews($id)
 //login
 
 
-
 function login($mail, $pass)
 {
-    $uName = "";
     $arr = [];
     $flag = false;
-    $servername = "localhost";
-    $username = "root";
-    $password = "root1234";
-    $dbname = "news";
-
     //创建连接对象
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli(servername, username, password, dbname);
     // Check connection
     if ($conn->connect_error) {
         die("连接失败: " . $conn->connect_error);
@@ -121,17 +119,13 @@ function login($mail, $pass)
 //pullNews
 
 
-
 function pullNews($type, $startRow, $rows)
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "root1234";
-    $dbname = "news";
 
     $data = array();
 // 创建连接
-    $con = mysqli_connect($servername, $username, $password, $dbname);
+    $con = mysqli_connect(servername, username, password, dbname);
+    mysqli_set_charset($con,"utf8");
 // 检测连接
     if ($type == 0) {
         $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article limit " . $startRow . "," . $rows . ";";
@@ -166,19 +160,46 @@ function pullNews($type, $startRow, $rows)
     mysqli_close($con);
 }
 
+//pullcat
+
+function pullCat()
+{
+
+    $data = array();
+// 创建连接
+    $con = mysqli_connect(servername, username, password, dbname);
+    mysqli_set_charset($con,"utf8");
+// 检测连接
+    $sql = "SELECT * FROM category;";
+
+    $result = mysqli_query($con, $sql);
+
+    if ($result) {
+        while ($row = mysqli_fetch_array($result)) {
+            $cat = new Cat();
+            $cat->id = $row["cato_Id"];
+            $cat->name = $row["cato_Name"];
+            $data[] = $cat;
+        }
+        //打印编码后的json字符串
+        $json = json_encode($data);
+        return $json;
+    } else {
+        echo "查询失败";
+    }
+    mysqli_close($con);
+}
+
 //register
 
 
 function insert($name, $pass, $mail, $tel)
 {
     $flag = false;
-    $servername = "localhost";
-    $username = "root";
-    $password = "root1234";
-    $dbname = "news";
+
 
     try {
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $conn = new PDO("mysql:host=" . servername . ";dbname=" . dbname, username, password);
         // 设置 PDO 错误模式，用于抛出异常
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         date_default_timezone_set("Asia/Shanghai");
@@ -208,8 +229,6 @@ if ($_GET['action'] == "announce") {
     }
 
 
-
-
 } elseif ($_GET['action'] == "article") {
     $atl_id = null;
     $type = null;
@@ -226,15 +245,8 @@ if ($_GET['action'] == "announce") {
     }
 
 
-
-
-
 } elseif ($_GET['action'] == "login") {
     echo login($_POST['username'], $_POST['password']);
-
-
-
-
 
 
 } elseif ($_GET['action'] == "register") {
@@ -245,16 +257,8 @@ if ($_GET['action'] == "announce") {
     }
 
 
-
-
-
-
 } elseif ($_GET['action'] == "pullNews") {
     echo pullNews($_POST['cato'], $_POST['startRow'], $_POST['rows']);
-
-
-
-
 
 
 } elseif ($_GET['action'] == "uploadImg") {
@@ -274,4 +278,9 @@ if ($_GET['action'] == "announce") {
         echo json_encode($arr);
         die;
     }
+
+
+} elseif ($_GET['action'] == "pullCat") {
+    echo pullCat();
+
 }

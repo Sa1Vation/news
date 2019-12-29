@@ -46,33 +46,28 @@
     <script type="text/javascript">
         var currentPage = 1;
         var type = 0;
+        var totalRows = getCookie("totalRows");
 
-
-        function pullNews() {
+        function loadNews() {
             var startRow = (currentPage - 1) * 8;
-            $.ajax({
-                type: "POST",
-                url: "news.php?action=pullNews",
-                dataType: "json",
-                data: {
-                    "cato": type,
-                    "startRow": startRow,
-                    "rows": 8
-                },
-                success: function (result) {
-                    var i = 1
-                    for (let article in result) {
-                        if (i > 8) {
-                            return;
-                        }
-                        addANews(i, result[article].title, result[article].author, result[article].postTime, result[article].cover, result[article].newsId, result[article].cat);
-                        i = i + 1;
-                    }
-
-                    console.log(getCookie('totalRows'));
-                    pagination();
+            if (totalRows <= 8) {
+                result = pullNews(type, startRow, totalRows);
+            } else {
+                result = pullNews(type, startRow, 8);
+            }
+            var i = 1
+            for (let article in result) {
+                if (i > 8) {
+                    return;
                 }
-            })
+                addANews(i, result[article].title, result[article].author, result[article].postTime, result[article].cover, result[article].newsId, result[article].cat);
+                i = i + 1;
+            }
+
+            console.log(getCookie('totalRows'));
+            if (totalRows > 8) {
+                pagination();
+            }
         }
 
         function addANews(i, title, author, posttime, cover, id, cat) {
@@ -87,7 +82,7 @@
         }
 
         function pagination() {
-            var totalRows = getCookie("totalRows");
+            totalRows = getCookie("totalRows");
             var totalPages = Math.ceil(totalRows / 8);
             if (currentPage != 1) {
                 $("#pagination").append("<li id='prev'><a href=\"#\"><i class=\"fa fa-angle-left\"></i></a></li>");
@@ -112,7 +107,7 @@
                     currentPage = $(this).children("a")[0].innerHTML;
                 }
                 $("#pagination").empty();
-                pullNews();
+                loadNews();
             })
 
         }
@@ -140,7 +135,7 @@
 
 </head>
 
-<body onload="init();pullNews();">
+<body onload="init();loadNews();">
 
 <div class="trending-bar trending-light d-md-block">
     <div class="container">
@@ -237,7 +232,7 @@
 
 <div class="container">
     <div class="row">
-        <a href="js/ueditor-dev-1.5.0/_examples/ueditor.html" class="btn">
+        <a href="ueditor.html" class="btn">
             <i class="icon icon-file-add"></i> 新建新闻</a>
     </div>
 </div>

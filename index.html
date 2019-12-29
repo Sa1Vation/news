@@ -46,73 +46,58 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
     <script src="js/myinit.js"></script>
+    <!-- Javascript Files
+================================================== -->
 
+    <!-- initialize jQuery Library -->
     <script src="js/jquery.js"></script>
-    <script type="text/javascript">
-        function pullNews(type) {
-            $.ajax({
-                type: "POST",
-                url: "news.php?action=pullNews",
-                dataType: "json",
-                data: {
-                    "cato": type,
-                    "startRow": 1,
-                    "rows": 14
-                },
-                success: function (result) {
-                    var i = 1
-                    for (let article in result) {
-                        var url = "/news/article.html?id="+result[article].newsId;
-                        if (i <= 2) {
-                            document.getElementById("title" + i.toString()).innerText = result[article].title;
-                            document.getElementById("title" + i.toString()).setAttribute("href",url);
-                            document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
-                            document.getElementById("author" + i.toString()).innerText = result[article].author;
-                            document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
-                            document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
-                            document.getElementById("cv" + i.toString()).innerText = result[article].cv;
-                            document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
-                            i = i + 1;
-                        } else if (i > 2 && i <= 4) {
-                            document.getElementById("title" + i.toString()).setAttribute("href",url);
-                            document.getElementById("title" + i.toString()).innerText = result[article].title;
-                            document.getElementById("author" + i.toString()).innerText = result[article].author;
-                            document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
-                            document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
-                            document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
-                            i = i + 1;
-                        } else if (i > 4 && i <= 14) {
-                            document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
-                            document.getElementById("title" + i.toString()).setAttribute("href",url);
-                            document.getElementById("title" + i.toString()).innerText = result[article].title;
-                            document.getElementById("author" + i.toString()).innerText = result[article].author;
-                            document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
-                            document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
-                            i = i + 1;
-                        } else {
-                            return;
-                        }
-                    }
-                }
-            })
-        }
+    <!-- Popper Jquery -->
+    <script src="js/popper.min.js"></script>
+    <!-- Bootstrap jQuery -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- magnific-popup -->
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <!-- Owl Carousel -->
+    <script src="js/owl.carousel.min.js"></script>
+    <!-- Color box -->
+    <script src="js/jquery.colorbox.js"></script>
+    <!-- Template custom -->
+    <script src="js/custom.js"></script>
 
-        function cat2str(cat) {
-            switch (cat) {
-                case "0":
-                    return "未分类";
-                case "1":
-                    return "科技";
-                case "2":
-                    return "政治";
-                case "3":
-                    return "娱乐";
-                case "4":
-                    return "体育";
-                case "5":
-                    return "财经";
-                case "6":
-                    return "游戏";
+    <script type="text/javascript">
+        function lopadNews(result){
+            var i = 1
+            for (let article in result) {
+                var url = "/news/article.html?id="+result[article].newsId;
+                if (i <= 2) {
+                    document.getElementById("title" + i.toString()).innerText = result[article].title;
+                    document.getElementById("title" + i.toString()).setAttribute("href",url);
+                    document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
+                    document.getElementById("author" + i.toString()).innerText = result[article].author;
+                    document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
+                    document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
+                    document.getElementById("cv" + i.toString()).innerText = result[article].cv;
+                    document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
+                    i = i + 1;
+                } else if (i > 2 && i <= 4) {
+                    document.getElementById("title" + i.toString()).setAttribute("href",url);
+                    document.getElementById("title" + i.toString()).innerText = result[article].title;
+                    document.getElementById("author" + i.toString()).innerText = result[article].author;
+                    document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
+                    document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
+                    document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
+                    i = i + 1;
+                } else if (i > 4 && i <= 14) {
+                    document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
+                    document.getElementById("title" + i.toString()).setAttribute("href",url);
+                    document.getElementById("title" + i.toString()).innerText = result[article].title;
+                    document.getElementById("author" + i.toString()).innerText = result[article].author;
+                    document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
+                    document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
+                    i = i + 1;
+                } else {
+                    return;
+                }
             }
         }
     </script>
@@ -120,7 +105,7 @@
 
 </head>
 
-<body onload="init();pullNews(0);">
+<body onload="init();loadNews(pullNews(0,1,14));pullCat();">
 <div class="trending-bar trending-light d-md-block">
     <div class="container">
         <div class="row justify-content-between">
@@ -207,36 +192,12 @@
                                 <div class="dropdown-menu mega-menu-content clearfix">
                                     <div class="menu-tab">
                                         <div class="row">
-                                            <ul class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
-                                                <li class="nav-item">
-                                                    <a class="animated fadeIn active" href="#tab-A" data-toggle="tab">
-											  			<span class="tab-head">
-															<span class="tab-text-title">Health</span>
-														</span>
-                                                    </a>
-                                                </li>
+                                            <ul id="catItems" class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
+
                                             </ul>
 
-                                            <div class="tab-content col-10">
-                                                <div class="tab-pane fade show active" id="tab-A">
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/lifestyle/image1.jpg"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">That wearable on your wrist soon
-                                                                            track your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                    </div>
-                                                </div><!-- Tab pane 1 end -->
+                                            <div id="tabs" class="tab-content col-10">
+
                                             </div> <!-- Tab pane 2 end -->
                                         </div>
                                     </div><!-- Menu tab end -->
@@ -644,23 +605,6 @@
 </div>
 <!-- backto end-->
 
-<!-- Javascript Files
-================================================== -->
-
-<!-- initialize jQuery Library -->
-<script src="js/jquery.js"></script>
-<!-- Popper Jquery -->
-<script src="js/popper.min.js"></script>
-<!-- Bootstrap jQuery -->
-<script src="js/bootstrap.min.js"></script>
-<!-- magnific-popup -->
-<script src="js/jquery.magnific-popup.min.js"></script>
-<!-- Owl Carousel -->
-<script src="js/owl.carousel.min.js"></script>
-<!-- Color box -->
-<script src="js/jquery.colorbox.js"></script>
-<!-- Template custom -->
-<script src="js/custom.js"></script>
 
 </body>
 </html>
