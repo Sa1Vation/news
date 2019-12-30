@@ -46,10 +46,159 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
     <script src="js/myinit.js"></script>
+    <script type="text/javascript">
+
+        <!--
+        加载此类别新闻-->
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return pair[1];
+                }
+            }
+            return (false);
+        }
+
+        var isSideTabAdded = false;
+        function pullThisCategory() {
+            var cateId = 2;
+            if (cateId == false) {
+                window.location.href = "404.html";
+            } else {
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    dataType: "json",
+                    url: "news.php?action=pullThisCategory",
+                    data: {
+                        'cateId': cateId,
+                        'startRow': 0,
+                        'rows': 8,
+                        'isDesc': true
+                    },
+                    success: function (result) {
+                        var i = 1
+                        for (let article in result) {
+                            if (i > 8) {
+                                return;
+                            }
+                            addANews(i, result[article].title, result[article].author, result[article].postTime, result[article].cover, result[article].newsId, result[article].cat);
+                            if(!isSideTabAdded){
+                                addSideTab(i, result[article].title, result[article].author, result[article].postTime, result[article].cover, result[article].newsId, result[article].cat);
+                            }
+                            console.log(i, result[article].title, result[article].author, result[article].postTime, result[article].cover, result[article].newsId, result[article].cat);
+                            i = i + 1;
+                        }
+                        isSideTabAdded = true;
+                    }
+                })
+            }
+        }
+
+        function addANews(i, title, author, posttime, cover, id, cat) {
+            console.log(id);
+            $(".post-thumb > a").eq(i - 1).attr("href", "article.html?id=" + id);
+            $(".title-md > a").eq(i - 1).attr("href", "article.html?id=" + id);
+            $(".title-md > a").eq(i-1).html(title);
+            $("img").eq(i).attr("src", cover);
+            $(".post-thumb > div > a").eq(i - 1).html(cat2str(cat));
+            $(".post-content > div > span").eq(2 * i - 2).html(author);
+            $(".post-content > div > span").eq(2 * i - 1).html(posttime);
+        }
+
+        function addSideTab(i, title, author, posttime, cover, id, cat) {
+            $("img").eq(i+8).attr("src", cover);
+            $(".post-title > a").eq(i+9).html(title);
+            $(".post-cat").eq(i+7).html(cat2str(cat));
+            $(".post-date").eq(i+7).html(posttime);
+        }
+
+        <!--nav-tab有关js-->
+        function pullCat() {
+            $.ajax({
+                type: "POST",
+                url: "news.php?action=pullCat",
+                async: false,
+                data: {},
+                dataType: "json",
+                success: function (result) {
+                    var i = 0;
+                    for (let cat in result) {
+                        var item = '<li class=\"nav-item\"><a class=\"animated fadeIn\" href=\"#tab-' + String.fromCharCode(i + 65) + '\" data-toggle=\"tab\"><span class=\"tab-head\"><span class=\"tab-text-title\">' + result[cat].name + '</span></span></a></li>';
+                        $("#catItems").append(item);
+                        var tabItem = '<div id="tab-' + String.fromCharCode(i + 65) + '" class="tab-pane fade"><div class="tab-item-row row"></div></div>';
+                        $("#tabs").append(tabItem);
+                        i = i + 1;
+                    }
+                    $('#catItems > li > a').hover(function () {
+                        $(this).tab('show');
+                    })
+                }
+            })
+            addTabItem();
+        }
+
+        function addTabItem() {
+            var i = 1;
+            while (true) {
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "news.php?action=pullNews",
+                    dataType: "json",
+                    data: {
+                        "cato": i,
+                        "startRow": 0,
+                        "rows": 4,
+                        "isDesc": true
+                    },
+                    success: function (result) {
+                        for (let article in result) {
+                            var artItem = '<div class="col-md-3"><div class="post-block-style clearfix"><div class="post-thumb"><a href="article.html?id=' + result[article].newsId + '"><img class="img-fluid" src="' + result[article].cover + '" alt=""></a></div><div class="post-content"><h2 class="post-title title-small"><a style="font: 7px" href="article.html?id=' + result[article].newsId + '">' + result[article].title + '</a></h2></div></div></div>';
+                            $("#tab-" + String.fromCharCode(i + 64) + "> div").append(artItem);
+                        }
+
+                    }
+                })
+                if (i == 10) {
+                    break;
+                }
+                i = i + 1;
+            }
+        }
+
+        <!--nav-tab有关js-->
+
+        function cat2str(cat) {
+            switch (cat) {
+                case "0":
+                    return "未分类";
+                case "1":
+                    return "科技";
+                case "2":
+                    return "政治";
+                case "3":
+                    return "娱乐";
+                case "4":
+                    return "体育";
+                case "5":
+                    return "财经";
+                case "6":
+                    return "游戏";
+            }
+        }
+    </script>
+
+    <!--看板娘-->
+    <script src="js/live2d-widget/autoload.js"></script>
+    <!--看板娘-->
 
 </head>
 
-<body onload="init()">
+<body onload="init();pullThisCategory();pullCat();">
 <div class="trending-bar trending-light d-md-block">
     <div class="container">
         <div class="row justify-content-between">
@@ -127,312 +276,21 @@
 
                             <li class="nav-item dropdown mega-dropdown">
                                 <a href="category.html" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                   aria-haspopup="true" aria-expanded="false">Lifestyle <i class="fa fa-angle-down"></i></a>
+                                   aria-haspopup="true" aria-expanded="false">分类 <i class="fa fa-angle-down"></i></a>
                                 <!-- responsive dropdown -->
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="category.html">lifestyle 1</a></li>
-                                    <li><a href="category.html">lifestyle 2</a></li>
-                                    <li><a href="category.html">lifestyle 3</a></li>
                                 </ul>
                                 <!-- responsive dropdown end -->
                                 <div class="dropdown-menu mega-menu-content clearfix">
                                     <div class="menu-tab">
                                         <div class="row">
-                                            <ul class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
-                                                <li class="nav-item">
-                                                    <a class="animated fadeIn active" href="#tab-A" data-toggle="tab">
-											  			<span class="tab-head">
-															<span class="tab-text-title">Health</span>
-														</span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="animated fadeIn" href="#tab-B" data-toggle="tab">
-												  		<span class="tab-head">
-															<span class="tab-text-title">Travel</span>
-														</span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="animated fadeIn" href="#tab-C" data-toggle="tab">
-												  		<span class="tab-head">
-															<span class="tab-text-title">Food</span>
-														</span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="animated fadeIn" href="#tab-D" data-toggle="tab">
-												  		<span class="tab-head">
-															<span class="tab-text-title">Fashion</span>
-														</span>
-                                                    </a>
-                                                </li>
+                                            <ul id="catItems" class="nav nav-tabs flex-column col-2"
+                                                data-toggle="tab-hover">
+
                                             </ul>
 
-                                            <div class="tab-content col-10">
-                                                <div class="tab-pane fade show active" id="tab-A">
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/lifestyle/image1.jpg"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">That wearable on your wrist soon
-                                                                            track your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/lifestyle/image2.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Can't shed those Gym? The might be
-                                                                            in your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/lifestyle/image3.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Deleting fears the brain means you
-                                                                            might neve…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/health/image2.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Smart packs tech and beeps when
-                                                                            col…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                    </div>
-                                                </div><!-- Tab pane 1 end -->
-                                                <div class="tab-pane animated fadeIn" id="tab-B">
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/travel/image1.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">That wearable could soon track
-                                                                            your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/travel/image2.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Can't shed those Gym? might be in
-                                                                            your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/travel/image3.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Deleting fears from the you might
-                                                                            neve…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/health/image2.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Smart packs tech and beeps when
-                                                                            col…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                    </div><!-- Row end -->
-                                                </div><!-- tab B end -->
-                                                <div class="tab-pane animated fadeIn" id="tab-C">
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/fashion/image1.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">That wearable on your wrist could
-                                                                            soon</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-
-
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/fashion/image2.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Can't those Gym? The might be in
-                                                                            your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/food/food01.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Deleting fears from the might
-                                                                            neve…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/tech/tech1.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Smart packs parking sensor tech and
-                                                                            beeps when col…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                    </div>
-                                                </div><!-- Tab pane 3 end -->
-                                                <div class="tab-pane animated fadeIn" id="tab-D">
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/health/image1.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">That wearable on your wrist could
-                                                                            soon</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-
-
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/health/image2.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Can't those Gym? The might be in
-                                                                            your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/fashion/image4.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Deleting fears from the might
-                                                                            neve…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                        <div class="col-md-3">
-
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/tech/tech1.png"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">Smart packs parking sensor tech and
-                                                                            beeps when col…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                    </div>
-                                                </div><!-- Tab pane 4 end -->
+                                            <div id="tabs" class="tab-content col-10">
 
                                             </div> <!-- Tab pane 2 end -->
                                         </div>
@@ -539,8 +397,7 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
+                                
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -563,8 +420,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -587,8 +442,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -611,8 +464,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -635,8 +486,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -659,8 +508,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -683,8 +530,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -707,8 +552,6 @@
                                     <span class="post-author"><i class="fa fa-user"></i> John Doe</span>
                                     <span class="post-date"><i class="fa fa-clock-o"></i> 29 July, 2020</span>
                                 </div>
-                                <p>The market won’t stop actress and singer Jennifer Lopez from expanding her property
-                                    collection Lopez has reportedly added to her real.</p>
                             </div><!-- Post content end -->
                         </div>
                     </div><!-- col end -->
@@ -846,7 +689,7 @@
                                                             </div>
                                                         </div><!-- Post content end -->
                                                     </div><!-- Post block style end -->
-                                                </li><!-- Li 3 end -->
+                                                </li><!-- Li 4 end -->
                                             </ul><!-- List post end -->
                                         </div>
                                     </div><!-- Tab pane 1 end -->

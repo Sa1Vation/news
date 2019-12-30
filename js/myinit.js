@@ -61,34 +61,3 @@ function getCookie(name) {
         return null;
 }
 
-function pullCat() {
-    $.ajax({
-        type: "POST",
-        url: "news.php?action=pullCat",
-        data: {},
-        dataType: "json",
-        success: function (result) {
-            var i = 0;
-            for (let cat in result) {
-                var item = '<li class=\"nav-item\"><a class=\"animated fadeIn\" href=\"#tab-A\" data-toggle=\"tab\"><span class=\"tab-head\"><span class=\"tab-text-title\">' + result[cat].name + '</span></span></a></li>';
-                $("#catItems").append(item);
-                var tabitem = '<div class="tab-pane fade"><div class="row"></div></div>';
-                $("#tabs").append(tabitem);
-                for (j = 0; j <= 3; j++) {
-                    var artitem = '<div class="col-md-3"><div class="post-block-style clearfix"><div class="post-thumb"><a href="#"><img class="img-fluid" src="images/news/lifestyle/image1.jpg" alt=""></a></div><div class="post-content"><h2 class="post-title title-small"><a href="#">That wearable on your wrist soon your…</a></h2></div></div></div>';
-                    $("#tabs > div > div").eq(i).append(artitem);
-                }
-                i = i + 1;
-            }
-            $('#catItems > li > a').hover(function () {
-                $('#catItems > li > a').attr("class", "animated fadeIn");
-                $(this).attr("class", "animated fadeIn active");
-                var index = $('#catItems > li > a').index(this);
-                $("#tabs > div").attr("class", "tab-pane fade")
-                $("#tabs > div").eq(index).attr("class", "tab-pane animated fadeIn active")
-            })
-        }
-    })
-}
-
-

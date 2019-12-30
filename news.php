@@ -32,7 +32,7 @@ function publish($title, $author, $content, $cover, $cat)
 
 // 创建连接
     $conn = new mysqli(servername, username, password, dbname);
-    mysqli_set_charset($conn,"utf8");
+    mysqli_set_charset($conn, "utf8");
 // 检测连接
     if ($conn->connect_error) {
         die("连接失败: " . $conn->connect_error);
@@ -63,7 +63,7 @@ function getNews($id)
     $data = array();
 // 创建连接
     $con = mysqli_connect(servername, username, password, dbname);
-    mysqli_set_charset($con,"utf8");
+    mysqli_set_charset($con, "utf8");
 // 检测连接
     $int_id = (int)$id;
     $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id, atl_Content FROM article WHERE atl_Id=" . $int_id . ";";
@@ -119,20 +119,31 @@ function login($mail, $pass)
 //pullNews
 
 
-function pullNews($type, $startRow, $rows)
+function pullNews($type, $startRow, $rows, $isDesc=true)
 {
 
     $data = array();
 // 创建连接
     $con = mysqli_connect(servername, username, password, dbname);
-    mysqli_set_charset($con,"utf8");
+    mysqli_set_charset($con, "utf8");
 // 检测连接
-    if ($type == 0) {
-        $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article limit " . $startRow . "," . $rows . ";";
+    if($type == 0){
         $sql2 = "SELECT count(*) as AllNum FROM article;";
-    } else {
-        $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article WHERE atl_Cato_Id=" . $type . "limit " . $startRow . "," . $rows . ";";
+    }else{
         $sql2 = "SELECT count(*) as AllNum FROM article WHERE atl_Id=" . $type . ";";
+    }
+    if (!$isDesc) {
+        if ($type == 0) {
+            $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article limit " . $startRow . "," . $rows . ";";
+        } else {
+            $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article WHERE atl_Cato_Id=" . $type . " limit " . $startRow . "," . $rows . ";";
+        }
+    }else{
+        if ($type == 0) {
+            $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article order by atl_Id desc limit " . $startRow . "," . $rows . ";";
+        } else {
+            $sql = "SELECT atl_Id, atl_Title, atl_author, atl_Post_Time, atl_Cover, atl_CV, atl_Cato_id FROM article WHERE atl_Cato_Id=" . $type . " order by atl_Id desc limit " . $startRow . "," . $rows . ";";
+        }
     }
 
     $result = mysqli_query($con, $sql);
@@ -156,6 +167,7 @@ function pullNews($type, $startRow, $rows)
         return $json;
     } else {
         echo "查询失败";
+        echo $sql;
     }
     mysqli_close($con);
 }
@@ -168,7 +180,7 @@ function pullCat()
     $data = array();
 // 创建连接
     $con = mysqli_connect(servername, username, password, dbname);
-    mysqli_set_charset($con,"utf8");
+    mysqli_set_charset($con, "utf8");
 // 检测连接
     $sql = "SELECT * FROM category;";
 
@@ -258,7 +270,7 @@ if ($_GET['action'] == "announce") {
 
 
 } elseif ($_GET['action'] == "pullNews") {
-    echo pullNews($_POST['cato'], $_POST['startRow'], $_POST['rows']);
+    echo pullNews($_POST['cato'], $_POST['startRow'], $_POST['rows'], $_POST['isDesc']);
 
 
 } elseif ($_GET['action'] == "uploadImg") {
@@ -282,5 +294,8 @@ if ($_GET['action'] == "announce") {
 
 } elseif ($_GET['action'] == "pullCat") {
     echo pullCat();
+
+} elseif ($_GET['action'] == "pullThisCategory") {
+    echo pullNews($_POST['cateId'],0,8,true);
 
 }

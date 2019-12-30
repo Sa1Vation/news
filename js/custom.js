@@ -26,10 +26,6 @@ jQuery(function($) {
 		$(this).siblings().slideToggle();
 	});
 
-	$('.nav-tabs[data-toggle="tab-hover"] > li > a').hover( function(){
-    	$(this).tab('show');
-	});
-
 	/**-------------------------------------------------
      *Fixed HEader
      *----------------------------------------------------**/

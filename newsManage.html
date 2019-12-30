@@ -46,9 +46,11 @@
     <script type="text/javascript">
         var currentPage = 1;
         var type = 0;
-        var startRow = (currentPage - 1) * 8;
+        var totalRows = 8;
+
 
         function pullNews() {
+            var startRow = (currentPage - 1) * 8;
             $.ajax({
                 type: "POST",
                 url: "news.php?action=pullNews",
@@ -56,7 +58,8 @@
                 data: {
                     "cato": type,
                     "startRow": startRow,
-                    "rows": 8
+                    "rows": 8,
+                    "isDesc": true
                 },
                 success: function (result) {
                     loadNews(result);

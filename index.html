@@ -68,12 +68,14 @@
         function pullNews() {
             $.ajax({
                 type: "POST",
+                async: true,
                 url: "news.php?action=pullNews",
                 dataType: "json",
                 data: {
                     "cato": 0,
                     "startRow": 0,
-                    "rows": 14
+                    "rows": 14,
+                    "isDesc": true
                 },
                 success: function (result) {
                     loadNews(result);
@@ -81,14 +83,14 @@
             })
         }
 
-        function loadNews(result){
+        function loadNews(result) {
             var i = 1
             for (let article in result) {
-                var url = "/news/article.html?id="+result[article].newsId;
+                var url = "/news/article.html?id=" + result[article].newsId;
                 if (i <= 2) {
                     document.getElementById("title" + i.toString()).innerText = result[article].title;
-                    document.getElementById("title" + i.toString()).setAttribute("href",url);
-                    document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
+                    document.getElementById("title" + i.toString()).setAttribute("href", url);
+                    document.getElementById("imgurl" + i.toString()).setAttribute("href", url);
                     document.getElementById("author" + i.toString()).innerText = result[article].author;
                     document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
                     document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
@@ -96,7 +98,7 @@
                     document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
                     i = i + 1;
                 } else if (i > 2 && i <= 4) {
-                    document.getElementById("title" + i.toString()).setAttribute("href",url);
+                    document.getElementById("title" + i.toString()).setAttribute("href", url);
                     document.getElementById("title" + i.toString()).innerText = result[article].title;
                     document.getElementById("author" + i.toString()).innerText = result[article].author;
                     document.getElementById("posttime" + i.toString()).innerText = result[article].postTime;
@@ -104,8 +106,8 @@
                     document.getElementById("cat" + i.toString()).innerText = cat2str(result[article].cat);
                     i = i + 1;
                 } else if (i > 4 && i <= 14) {
-                    document.getElementById("imgurl" + i.toString()).setAttribute("href",url);
-                    document.getElementById("title" + i.toString()).setAttribute("href",url);
+                    document.getElementById("imgurl" + i.toString()).setAttribute("href", url);
+                    document.getElementById("title" + i.toString()).setAttribute("href", url);
                     document.getElementById("title" + i.toString()).innerText = result[article].title;
                     document.getElementById("author" + i.toString()).innerText = result[article].author;
                     document.getElementById("img" + i.toString()).style = "background-image:url(" + result[article].cover + ")";
@@ -116,6 +118,8 @@
                 }
             }
         }
+
+        <!--加载页面上的新闻-->
 
         function cat2str(cat) {
             switch (cat) {
@@ -135,7 +139,67 @@
                     return "游戏";
             }
         }
+
+        <!--nav-tab有关js-->
+        function pullCat() {
+            $.ajax({
+                type: "POST",
+                url: "news.php?action=pullCat",
+                async: false,
+                data: {},
+                dataType: "json",
+                success: function (result) {
+                    var i = 0;
+                    for (let cat in result) {
+                        var item = '<li class=\"nav-item\"><a class=\"animated fadeIn\" href=\"#tab-' + String.fromCharCode(i + 65) + '\" data-toggle=\"tab\"><span class=\"tab-head\"><span class=\"tab-text-title\">' + result[cat].name + '</span></span></a></li>';
+                        $("#catItems").append(item);
+                        var tabItem = '<div id="tab-' + String.fromCharCode(i + 65) + '" class="tab-pane fade"><div class="tab-item-row row"></div></div>';
+                        $("#tabs").append(tabItem);
+                        i = i + 1;
+                    }
+                    $('#catItems > li > a').hover(function () {
+                        $(this).tab('show');
+                    })
+                }
+            })
+            addTabItem();
+        }
+
+        function addTabItem() {
+            var i = 1;
+            while (true) {
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "news.php?action=pullNews",
+                    dataType: "json",
+                    data: {
+                        "cato": i,
+                        "startRow": 0,
+                        "rows": 4,
+                        "isDesc": true
+                    },
+                    success: function (result) {
+                        for (let article in result) {
+                            var artItem = '<div class="col-md-3"><div class="post-block-style clearfix"><div class="post-thumb"><a href="article.html?id=' + result[article].newsId + '"><img class="img-fluid" src="' + result[article].cover + '" alt=""></a></div><div class="post-content"><h2 class="post-title title-small"><a style="font: 7px" href="article.html?id=' + result[article].newsId + '">' + result[article].title + '</a></h2></div></div></div>';
+                            $("#tab-" + String.fromCharCode(i + 64) + "> div").append(artItem);
+                        }
+
+                    }
+                })
+                if (i == 10) {
+                    break;
+                }
+                i = i + 1;
+            }
+        }
+
     </script>
+    <!--nav-tab有关js-->
+
+    <!--看板娘-->
+    <script src="js/live2d-widget/autoload.js"></script>
+    <!--看板娘-->
 
 
 </head>
@@ -227,7 +291,8 @@
                                 <div class="dropdown-menu mega-menu-content clearfix">
                                     <div class="menu-tab">
                                         <div class="row">
-                                            <ul id="catItems" class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
+                                            <ul id="catItems" class="nav nav-tabs flex-column col-2"
+                                                data-toggle="tab-hover">
 
                                             </ul>
 

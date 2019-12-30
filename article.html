@@ -49,6 +49,7 @@
 
     <script src="js/jquery.js"></script>
     <script type="text/javascript">
+        <!--加载新闻-->
         function getQueryVariable(variable)
         {
             var query = window.location.search.substring(1);
@@ -75,8 +76,7 @@
                     'id' : id
                 },
                 success: function (result) {
-                    console.log("ajax请求已发出");
-                    console.log(result);
+                    document.title = result[0].title;
                     document.getElementById("atlTitle").innerText = result[0].title;
                     document.getElementById("atlAuthor").innerText = result[0].author;
                     document.getElementById("atlPosttime").innerText = result[0].postTime;
@@ -87,6 +87,7 @@
                 }
             });
         }
+        <!--加载新闻-->
 
         function cat2str(cat) {
             switch (cat) {
@@ -106,11 +107,70 @@
                     return "游戏";
             }
         }
+
+        <!--nav-tab有关js-->
+        function pullCat() {
+            $.ajax({
+                type: "POST",
+                url: "news.php?action=pullCat",
+                async: false,
+                data: {},
+                dataType: "json",
+                success: function (result) {
+                    var i = 0;
+                    for (let cat in result) {
+                        var item = '<li class=\"nav-item\"><a class=\"animated fadeIn\" href=\"#tab-' + String.fromCharCode(i + 65) + '\" data-toggle=\"tab\"><span class=\"tab-head\"><span class=\"tab-text-title\">' + result[cat].name + '</span></span></a></li>';
+                        $("#catItems").append(item);
+                        var tabItem = '<div id="tab-' + String.fromCharCode(i + 65) + '" class="tab-pane fade"><div class="tab-item-row row"></div></div>';
+                        $("#tabs").append(tabItem);
+                        i = i + 1;
+                    }
+                    $('#catItems > li > a').hover(function () {
+                        $(this).tab('show');
+                    })
+                }
+            })
+            addTabItem();
+        }
+
+        function addTabItem() {
+            var i = 1;
+            while (true) {
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "news.php?action=pullNews",
+                    dataType: "json",
+                    data: {
+                        "cato": i,
+                        "startRow": 0,
+                        "rows": 4
+                    },
+                    success: function (result) {
+                        for (let article in result) {
+                            var artItem = '<div class="col-md-3"><div class="post-block-style clearfix"><div class="post-thumb"><a href="article.html?id=' + result[article].newsId + '"><img class="img-fluid" src="' + result[article].cover + '" alt=""></a></div><div class="post-content"><h2 class="post-title title-small"><a style="font: 7px" href="article.html?id=' + result[article].newsId + '">' + result[article].title + '</a></h2></div></div></div>';
+                            $("#tab-" + String.fromCharCode(i + 64) + "> div").append(artItem);
+                        }
+
+                    }, error(data) {
+                        break;
+                    }
+                })
+                if (i == 10) {
+                    break;
+                }
+                i = i + 1;
+            }
+        }
+        <!--nav-tab有关js-->
     </script>
+
+
+    <script src="js/live2d-widget/autoload.js"></script>
 
 </head>
 
-<body onload="init();pullANews();">
+<body onload="init();pullANews();pullCat();">
 <div class="trending-bar trending-light d-md-block">
     <div class="container">
         <div class="row justify-content-between">
@@ -204,36 +264,13 @@
                                 <div class="dropdown-menu mega-menu-content clearfix">
                                     <div class="menu-tab">
                                         <div class="row">
-                                            <ul class="nav nav-tabs flex-column col-2" data-toggle="tab-hover">
-                                                <li class="nav-item">
-                                                    <a class="animated fadeIn active" href="#tab-A" data-toggle="tab">
-											  			<span class="tab-head">
-															<span class="tab-text-title">Health</span>
-														</span>
-                                                    </a>
-                                                </li>
+                                            <ul id="catItems" class="nav nav-tabs flex-column col-2"
+                                                data-toggle="tab-hover">
+
                                             </ul>
 
-                                            <div class="tab-content col-10">
-                                                <div class="tab-pane fade show active" id="tab-A">
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="post-block-style clearfix">
-                                                                <div class="post-thumb">
-                                                                    <a href="#"><img class="img-fluid"
-                                                                                     src="images/news/lifestyle/image1.jpg"
-                                                                                     alt=""/></a>
-                                                                </div>
-                                                                <div class="post-content">
-                                                                    <h2 class="post-title title-small">
-                                                                        <a href="#">That wearable on your wrist soon
-                                                                            track your…</a>
-                                                                    </h2>
-                                                                </div><!-- Post content end -->
-                                                            </div><!-- Post Block style end -->
-                                                        </div>
-                                                    </div>
-                                                </div><!-- Tab pane 1 end -->
+                                            <div id="tabs" class="tab-content col-10">
+
                                             </div> <!-- Tab pane 2 end -->
                                         </div>
                                     </div><!-- Menu tab end -->
@@ -500,6 +537,7 @@
     </div>
 </div>
 <!-- backto end-->
+
 
 <!-- Javascript Files
 ================================================== -->
